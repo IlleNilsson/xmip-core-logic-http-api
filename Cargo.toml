@@ -19,8 +19,11 @@ path = "src/lib.rs"
 logic = { package = "xmip-core-logic", git = "https://github.com/IlleNilsson/xmip-core-logic", branch = "main" }
 stream = { package = "xmip-core-stream", git = "https://github.com/IlleNilsson/xmip-core-stream", branch = "main" }
 contract = { package = "xmip-core-contract", git = "https://github.com/IlleNilsson/xmip-core-contract", branch = "main" }
+# The description an API is bound to is read by the contract that holds it
+# (ADR-0044); this technology takes the operations it declares from there.
+openapi = { package = "xmip-core-contract-openapi", git = "https://github.com/IlleNilsson/xmip-core-contract-openapi", branch = "main" }
 
-# An OpenAPI document is JSON; so is a fault body.
+# A fault body is JSON.
 serde_json = "1"
 
 [dev-dependencies]
