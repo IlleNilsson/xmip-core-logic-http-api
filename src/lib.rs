@@ -16,6 +16,7 @@ use contract::ContractId;
 use logic::{
     Arrival, Fault, Header, Invocation, Logic, LogicError, OperationName, Outcome, Reply, Request,
 };
+use openapi::description::Description;
 use serde_json::Value;
 use stream::Stream;
 
@@ -43,39 +44,28 @@ impl HttpApi {
         }
     }
 
-    /// Operations named by an `OpenAPI` document: every `paths` entry's
-    /// method with an `operationId`, and `info.title` as the service.
+    /// Operations named by an `OpenAPI` document: every operation the
+    /// description declares with an `operationId`, and `info.title` as the
+    /// service. The description is read by the `openapi` contract (ADR-0044).
     ///
     /// # Errors
-    /// The document is not JSON or has no `paths`.
+    /// The document is not JSON.
     pub fn with_openapi(document: &str) -> Result<Self, LogicError> {
-        let document: Value = serde_json::from_str(document)
-            .map_err(|error| LogicError::new(format!("not valid JSON: {error}")))?;
-        let paths = document
-            .get("paths")
-            .and_then(Value::as_object)
-            .ok_or_else(|| LogicError::new("the document has no paths"))?;
-        let mut routes = Vec::new();
-        for (template, item) in paths {
-            let Some(operations) = item.as_object() else {
-                continue;
-            };
-            for (method, operation) in operations {
-                if let Some(id) = operation.get("operationId").and_then(Value::as_str) {
-                    routes.push(Route {
-                        method: method.to_ascii_uppercase(),
-                        template: template.clone(),
-                        operation_id: id.to_string(),
-                    });
-                }
-            }
-        }
+        let description =
+            Description::parse(document).map_err(|error| LogicError::new(error.message))?;
+        let routes = description
+            .operations()
+            .iter()
+            .filter_map(|declared| {
+                Some(Route {
+                    method: declared.method.to_ascii_uppercase(),
+                    template: declared.template.clone(),
+                    operation_id: declared.operation_id.clone()?,
+                })
+            })
+            .collect();
         Ok(Self {
-            service: document
-                .pointer("/info/title")
-                .and_then(Value::as_str)
-                .unwrap_or("")
-                .to_string(),
+            service: description.title().to_string(),
             routes,
         })
     }
