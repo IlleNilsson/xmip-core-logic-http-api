@@ -12,11 +12,11 @@
 //! (ADR-0014 amendment 2026-08-26): the web API is this technology over the
 //! `http` transport.
 
-use contract::ContractId;
 use logic::{
     Arrival, Fault, Header, Invocation, Logic, LogicError, OperationName, Outcome, Reply, Request,
 };
 use openapi::description::Description;
+use sdk::contract::ContractId;
 use serde_json::Value;
 use stream::Stream;
 
