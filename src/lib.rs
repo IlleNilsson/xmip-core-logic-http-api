@@ -170,6 +170,7 @@ impl Logic for HttpApi {
         let id = invocation.arguments.id();
         Ok(match outcome {
             Outcome::Result(result) => Reply {
+                trailers: Vec::new(),
                 headers: vec![
                     Header::new(":status", "200"),
                     Header::new(
@@ -183,6 +184,7 @@ impl Logic for HttpApi {
                 let status = fault.code.parse::<u16>().unwrap_or(500);
                 let body = serde_json::json!({ "error": fault.code, "message": fault.message });
                 Reply {
+                    trailers: Vec::new(),
                     headers: vec![
                         Header::new(":status", status.to_string()),
                         Header::new("Content-Type", "application/problem+json"),
@@ -362,6 +364,7 @@ mod tests {
             ("DELETE", "/orders/42")
         );
         let gone = Reply {
+            trailers: Vec::new(),
             headers: vec![Header::new(":status", "204")],
             body: json(""),
         };
@@ -370,6 +373,7 @@ mod tests {
             Outcome::Result(_)
         ));
         let missing = Reply {
+            trailers: Vec::new(),
             headers: vec![Header::new(":status", "404")],
             body: json(r#"{"message":"no such order"}"#),
         };
