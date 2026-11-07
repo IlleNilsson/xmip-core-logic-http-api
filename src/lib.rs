@@ -98,7 +98,7 @@ fn bind(template: &str, path: &str) -> Option<Vec<Header>> {
     }
     let mut parameters = Vec::new();
     for (segment, value) in wanted.iter().zip(actual) {
-        match segment.strip_prefix('{').and_then(|s| s.strip_suffix('}')) {
+        match segment.strip_circumfix('{', '}') {
             Some(name) => parameters.push(Header::new(name, value)),
             None if *segment == value => {}
             None => return None,
