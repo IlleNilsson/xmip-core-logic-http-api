@@ -260,6 +260,7 @@ impl Logic for HttpApi {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::assert_matches;
     use xcore::StreamId;
 
     fn json(text: &str) -> Stream {
@@ -368,10 +369,10 @@ mod tests {
             headers: vec![Header::new(":status", "204")],
             body: json(""),
         };
-        assert!(matches!(
+        assert_matches!(
             api.outcome(&invocation, &gone).expect("outcome"),
             Outcome::Result(_)
-        ));
+        );
         let missing = Reply {
             trailers: Vec::new(),
             headers: vec![Header::new(":status", "404")],
