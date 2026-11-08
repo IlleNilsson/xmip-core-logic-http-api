@@ -241,7 +241,7 @@ impl Logic for HttpApi {
         if (200..300).contains(&status) {
             return Ok(Outcome::Result(reply.body.clone()));
         }
-        let message = std::str::from_utf8(reply.body.bytes())
+        let message = std::str::from_utf8(reply.body.load()?)
             .ok()
             .and_then(|text| serde_json::from_str::<Value>(text).ok())
             .and_then(|json| {
@@ -317,7 +317,7 @@ mod tests {
         };
         let invocation = HttpApi::new().invocation(&arrival).expect("invocation");
         assert_eq!(invocation.operation.name, "POST /orders");
-        assert_eq!(invocation.arguments.bytes(), body.bytes());
+        assert_eq!(invocation.arguments.load(), body.load());
     }
 
     #[test]
@@ -344,7 +344,7 @@ mod tests {
             .expect("reply");
         assert!(refused.headers.contains(&Header::new(":status", "404")));
         assert!(
-            std::str::from_utf8(refused.body.bytes())
+            std::str::from_utf8(refused.body.load().expect("held"))
                 .expect("json")
                 .contains("no such order")
         );
