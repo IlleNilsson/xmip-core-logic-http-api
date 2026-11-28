@@ -13,18 +13,18 @@ path = "src/lib.rs"
 [dependencies]
 # A Technology depends on its parent Capability, never the reverse
 # (repository-model.md). The Logic trait and its shapes live there.
-logic = { package = "xmip-core-logic", git = "https://github.com/IlleNilsson/xmip-core-logic", branch = "main" }
-stream = { package = "xmip-core-stream", git = "https://github.com/IlleNilsson/xmip-core-stream", branch = "main" }
-contract = { package = "xmip-core-contract", git = "https://github.com/IlleNilsson/xmip-core-contract", branch = "main" }
+logic = { workspace = true }
+stream = { workspace = true }
+contract = { workspace = true }
 # The description an API is bound to is read by the contract that holds it
 # (ADR-0044); this technology takes the operations it declares from there.
-openapi = { package = "xmip-core-contract-openapi", git = "https://github.com/IlleNilsson/xmip-core-contract-openapi", branch = "main" }
+openapi = { workspace = true }
 
 # A fault body is JSON.
 serde_json = "1"
 
 [dev-dependencies]
-xcore = { package = "xmip-core", git = "https://github.com/IlleNilsson/xmip-core", branch = "main" }
+xcore = { workspace = true }
 
 [lints]
 workspace = true
